@@ -1,0 +1,16 @@
+name: queries-carlitos-way
+framework:
+    type: perl
+command: perl queries.pl
+processes:
+    web: ~
+mem: 128M
+requirements:
+  ppm:
+    - DBI
+    - DBD::mysql
+    - JSON
+    - Data::Dumper
+
+services:
+  ${name}-db: mysql

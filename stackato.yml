@@ -1,7 +1,7 @@
 name: queries-carlitos-way
 framework:
     type: perl
-command: perl queries.pl --loops 5 --interval 2 --records 4000 --delete
+command: perl queries.pl --loops 2 --interval 2 --records 1000 --delete
 processes:
     web: ~
 mem: 128M

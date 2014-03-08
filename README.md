@@ -2,7 +2,8 @@ queries-ap926
 =============
 
 For testing query performance on insert/update
-``
+
+```
 
 DIS MAGIC RESULTS WITH 1,000 RECORDS
 -------------------------------------
@@ -71,4 +72,4 @@ MR1 RESULTS WITH 4,000 RECODS
 2014-03-08T13:27:04-0500 app.0: Finished loop number 5. Next loop in 2 seconds
 2014-03-08T13:27:06-0500 stackato.dea.0: Stopping application 'queries-carlitos-way' on DEA 80cdd4
 2014-03-08T13:27:06-0500 app.0: Done
-``
+```

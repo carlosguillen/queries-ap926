@@ -2,7 +2,7 @@
 # query tester
 # none-prepared version
 #
-# o.O <))>< 
+# o.O <))><
 ################################
 use strict;
 use warnings;
@@ -23,7 +23,7 @@ my (%ips, $help, $loops, $interval, $numRecords, $dbh, $delete);
 my ($nxIp, $inserts, $updates) = ('10.10.10.10', 0, 0);
 
 my ($user, $password, $host, $port, $name) = $ENV{MYSQL_URL} =~ m{mysql://(.+?):(.+)\@(.+):(\d+)/(.*)};
-#mysql://uRisKChBGEReS:pI3ylhfGCSFmw@172.16.30.200:3306/d2b36c92db6af49b7aa82b64e935abb84
+#mysql://root:mytwolittlefeet@localhost:3306/poseidondb
 
 
 sub main {
@@ -42,7 +42,8 @@ sub main {
 
   $dbh = DBI->connect("DBI:mysql:database=$name;hostname=$host;port=$port;", $user, $password)
     or die "Unable to connect: $DBI::errstr\n";
-  
+
+  createTableIfNotExists();
   truncateTableFirst() if defined $delete;
 
   generateSessions();
@@ -68,11 +69,11 @@ sub runQueries {
     }else{
       $inserts++;
       insertSession($ips{$ip});
-    }     
-  }      
+    }
+  }
   my $end = time();
   printf("Total updates => %d, inserts => %d for %d records in that loop. Running time: %.5f\n",
-    $updates, $inserts, $numRecords, $end - $start);  
+    $updates, $inserts, $numRecords, $end - $start);
 }
 
 sub sessionExists {
@@ -80,7 +81,7 @@ sub sessionExists {
   my $count;
   my $q = "SELECT COUNT(*) as counter from NomadixUsers where userId = ? and macAddress = ?";
   my $prep = $dbh->prepare($q);
-  $prep->execute($userId, $mac); 
+  $prep->execute($userId, $mac);
   $prep->bind_col(1, \$count);
   $prep->fetch;
   $count > 0;
@@ -89,9 +90,9 @@ sub sessionExists {
 sub updateSession {
   my ($s) = @_;
   my $q = q(
-    UPDATE NomadixUsers 
-    SET megaBytesUp = ?, 
-    megaBytesDown = ?, 
+    UPDATE NomadixUsers
+    SET megaBytesUp = ?,
+    megaBytesDown = ?,
     state = ?
     where userId = ? and macAddress = ?
   );
@@ -106,7 +107,7 @@ sub insertSession {
     VALUES (?, ?, ?, ?, ?, ?, ?)
   );
   my $prep = $dbh->prepare($q);
-  $prep->execute($s->{'userId'}, $s->{'mac'}, $s->{'ip'}, $s->{'mbUp'}, $s->{'mbDown'}, $nxIp, $s->{'state'});  
+  $prep->execute($s->{'userId'}, $s->{'mac'}, $s->{'ip'}, $s->{'mbUp'}, $s->{'mbDown'}, $nxIp, $s->{'state'});
 }
 
 sub generateSessions {
@@ -136,6 +137,32 @@ sub randomnizeSessions {
 sub truncateTableFirst {
   print "Truncating table first...\n";
   my $q = "TRUNCATE TABLE NomadixUsers";
+  $dbh->do($q);
+}
+
+sub createTableIfNotExists {
+ my $q = q|
+  CREATE TABLE IF NOT EXISTS `NomadixUsers` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `userId` bigint(20) NOT NULL DEFAULT '0',
+  `macAddress` varchar(20) NOT NULL DEFAULT '',
+  `ipAddress` varchar(20) NOT NULL DEFAULT '',
+  `bandwidthUp` double NOT NULL DEFAULT '0',
+  `bandwidthDown` double NOT NULL DEFAULT '0',
+  `throughputUp` varchar(20) NOT NULL DEFAULT '',
+  `throughputDown` varchar(20) NOT NULL DEFAULT '',
+  `expireTime` double NOT NULL DEFAULT '0',
+  `idleTime` int(11) NOT NULL DEFAULT '0',
+  `megaBytesUp` double NOT NULL DEFAULT '0',
+  `megaBytesDown` double NOT NULL DEFAULT '0',
+  `lastModified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `nomadixIp` varchar(50) NOT NULL DEFAULT '',
+  `state` varchar(25) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `idx_UserId` (`userId`),
+  KEY `idx_MacAddress` (`macAddress`)
+  ) ENGINE=InnoDB AUTO_INCREMENT=4888 DEFAULT CHARSET=utf8
+  |;
   $dbh->do($q);
 }
 

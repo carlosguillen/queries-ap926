@@ -16,6 +16,7 @@ use Getopt::Long;
 
 BEGIN {
   srand() if $] < 5.004;
+  print "Starting ~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
 }
 
 my (%ips, $help, $loops, $interval, $numRecords, $dbh, $delete);
@@ -182,13 +183,19 @@ sub dq2n{ unpack 'N', pack 'C4', split '\.', $_[0] }
 sub n2dq{ join '.', unpack 'C4', pack 'N', $_[0] }
 
 sub printUsage {
-  print "Usage: $0 [-h|--help] [-l|--loops 10] [-i|--interval 15] [-r|--records 1000] [-d|--delete]\n";
-  print "h\tThis little help test\n";
-  print "l\tnumber of loops, defaults to 10\n";
-  print "i\tseconds between loops, defaults to 15\n";
-  print "r\tnumber of records or sessions to generate, defaults to 10000 and is randomly changed with each loop\n";
-  print "d\tDelete or truncate table before start\n";
-  exit;
+    print <<USAGE;
+
+Usage: 
+
+perl $0 [-h|--help] [-l|--loops 10] [-i|--interval 15] [-r|--records 1000] [-d|--delete]
+-h   This little help text
+-l   number of loops, defaults to 10
+-i   seconds between loops, defaults to 15
+-r   number of records or sessions to generate, defaults to 1000 and is randomly changed with each loop
+-d   Delete or truncate table before start
+
+USAGE
+    exit;
 }
 
 main();

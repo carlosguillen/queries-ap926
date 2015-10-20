@@ -1,0 +1,18 @@
+name: queries-carlitos-way
+framework:
+    type: perl
+command: perl queries.pl --loops 2 --interval 2 --records 1000 --delete
+processes:
+    web: ~
+mem: 128M
+requirements:
+  ppm:
+    - DBI
+    - DBD::mysql
+    - JSON
+    - Data::Dumper
+    - Getopt::Long
+    - Time::HiRes
+
+services:
+  ${name}-db: mysql
